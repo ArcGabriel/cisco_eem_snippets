@@ -1,0 +1,25 @@
+event manager applet APP_SETTING_VARIABLE
+	event cli pattern "test_now" enter
+
+	action 001 cli command "enable"
+	action 002 cli command "configure terminal"
+
+	action 090 puts "$_last_event_sent"
+	action 100.0 comment "--- IF BLOCK AND UPDATING LOCAL VARIABLES ---"
+	action 101 if $_last_event_sent eq "http_response_200"
+	action 101.1  set _last_event_sent "http_response_404"
+	action 102 else
+	action 102.1  set _last_event_sent "http_response_200"
+	action 103 end
+	action 104 puts "$_last_event_sent"
+
+	action 200.0 comment "--- UPDATING EEM-ENVIRONMENT VARIABLES ---"
+	action 250 puts "$_last_event_sent"
+	action 260 cli command "eve man env _last_event_sent $_last_event_sent"
+	action 265 puts "$_cli_result"
+
+	action 300 cli command "do sh eve man env all"
+	action 301 puts "$_cli_result"
+
+	action 999 cli command "exit"
+exit
